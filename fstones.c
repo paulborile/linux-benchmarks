@@ -79,7 +79,7 @@ char	**argv;
 
 	time(&start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_CREAT|O_RDWR, 0644)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_CREAT|O_RDWR, 0644)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -112,7 +112,7 @@ phase2:
 
 	time(&start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -146,13 +146,13 @@ phase3:
 	time(&start);
 	srand(start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
 
 	for (i=0; i<randsize; i++) {
-		rnum = (rand() % size);
+		rnum = (rand() % (size-1));
 		rc = lseek(fd, rnum*blksize, 0);
 		if ( rc != rnum*blksize ) {
 			printf("Seek error on block %d\n", rnum);
@@ -186,13 +186,13 @@ phase4:
 	time(&start);
 	srand(start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_WRONLY)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_WRONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
 
 	for (i=0; i<randsize; i++) {
-		rnum = (rand() % size);
+		rnum = (rand() % (size-1));
 		rc = lseek(fd, rnum*blksize, 0);
 		if ( rc != rnum*blksize ) {
 			printf("Seek error on block %d\n", rnum);
@@ -254,7 +254,7 @@ phase55:
 
 	time(&start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_CREAT|O_RDWR|O_SYNC, 0644)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_CREAT|O_RDWR|O_SYNC, 0644)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -288,7 +288,7 @@ phase6:
 	time(&start);
 	srand(start);
 
-	if ((fd = open(argv[1], O_LARGEFILE|O_WRONLY|O_SYNC)) == -1 ) {
+	if ((fd = open64(argv[1], O_LARGEFILE|O_WRONLY|O_SYNC)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
