@@ -1,85 +1,77 @@
 /*
  *
- * 
+ *
  * Paul Stephen Borile
  *
  *
- * d i s k s t o n e s . c 	: Disk performance evaluator
+ * f s t o n e s . c 	: Disk performance evaluator
  *
  */
 
-static	char	*Version = "1.1";
+static	char	*Version = "2.1";
 
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <time.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #ifndef	O_LARGEFILE
 #define	O_LARGEFILE	0x00
 #endif
-#define	B1k	(1024*128)
 
-#define	MAX_DIR_OPS	100000
+#define	MAX_DIR_OPS	1000000
 
 int	offset;
-char	block1k[B1k];
+char	block1MB[1024*1024];
 char	*block;
 char	str[20];
 int	blksize;
 int	fd, fdsync;
 struct	stat	buf;
 
-int	start, stop;
-int	rnum;
-int	bytes;
+time_t	start, stop;
+long int	rnum;
+long int	bytes;
 int	seekerrs = 0, readerrs = 0, writerrs = 0;
 
-int	size;
-int	randsize;
-int	syncsize;
-int	lines = 0;
-int	totlines = 0;
+long int	size;
+long int	randsize;
+long int	syncsize;
 int	nfiles = 0;
 int	i,j;
 int	rc;
 double	seektime;
 double	servtime;
 
-main(argc, argv)
+void usage(char *str);
+
+int main(argc, argv)
 int	argc;
 char	**argv;
 {
 
 	if ( argc != 3 ) usage(argv[0]);
 	size	= atoi(argv[2]);
-	syncsize = size/10;
-	randsize= size/10;
+	syncsize = size;
+	randsize = size;
 
-	block	= block1k;
-	blksize = B1k;
-	bytes	= size * blksize;
+	block	= block1MB; // all operations are done at 1MB blocksize
+	blksize = 1024*1024;
+	bytes	= size * blksize * 1024; // size is in GB
 
-	memset(block, 'P', blksize);
-	for (i=79; (blksize-i) > 80; i+=80) {
-		block[i] = '\n';
-		lines++;
-	}
-	block[i]	= '\n';
-	block[blksize-1]= '\n';
-	lines		+=2;
-	totlines	= lines * size;
+	memset(block, 'F', blksize);
 
 	printf("Phase 0 ** fstones %s - (C) 1989 Paul Stephen Borile\n", Version);
 	printf("Phase 1 ** Sequential file creation \n");
-	printf("	   Creating a %d blocks file (%d byte blocks)\n", size
-					, blksize);
+	printf("	   Creating a %ld GB file\n", size);
 
 	time(&start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_CREAT|O_RDWR, 0644)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_CREAT|O_RDWR, 0644)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -99,7 +91,7 @@ char	**argv;
 		printf("Test too short, aborting\n");
 		goto phase2;
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	servtime = (double)((double)(stop-start)/(double)size);
 	printf("	   Average write service time %.9f ms.\n",
@@ -112,7 +104,7 @@ phase2:
 
 	time(&start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -132,7 +124,7 @@ phase2:
 		printf("Test too short, aborting\n");
 		goto phase3;
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	servtime = (double)((double)(stop-start)/(double)size);
 	printf("	   Average read service time %.9f ms.\n",
@@ -146,16 +138,16 @@ phase3:
 	time(&start);
 	srand(start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_RDONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
 
 	for (i=0; i<randsize; i++) {
-		rnum = (rand() % (size-1));
-		rc = lseek(fd, rnum*blksize, 0);
+		rnum = (rand() % (size*1024));
+		rc = lseek(fd, rnum*blksize, SEEK_SET);
 		if ( rc != rnum*blksize ) {
-			printf("Seek error on block %d\n", rnum);
+			printf("Seek error on block %ld\n", rnum);
 			seekerrs++;
 		}
 		rc = read(fd, block, blksize);
@@ -172,7 +164,7 @@ phase3:
 		printf("Test too short, aborting\n");
 		goto phase4;
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	seektime = (double)((double)(stop-start)/(double)randsize);
 	printf("	   Average seek-read time %.9f ms.\n",
@@ -186,16 +178,16 @@ phase4:
 	time(&start);
 	srand(start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_WRONLY)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_WRONLY)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
 
 	for (i=0; i<randsize; i++) {
-		rnum = (rand() % (size-1));
+		rnum = (rand() % ((size*1024)-1));
 		rc = lseek(fd, rnum*blksize, 0);
 		if ( rc != rnum*blksize ) {
-			printf("Seek error on block %d\n", rnum);
+			printf("Seek error on block %ld\n", rnum);
 			seekerrs++;
 		}
 		rc = write(fd, block, blksize);
@@ -212,11 +204,10 @@ phase4:
 		printf("Test too short, aborting\n");
 		goto phase5;
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	seektime = (double)((double)(stop-start)/(double)randsize);
-	printf("	   Average seek-write time %.9f ms.\n",
-						 seektime * 1000);
+	printf("	   Average seek-write time %.9f ms.\n", seektime * 1000);
 
 /************************************ End of phase 4 ************************/
 phase5:
@@ -241,20 +232,19 @@ phase5:
 		printf("Test too short, aborting\n");
 		goto phase55;
 	}
-	
-	printf("	   Elapsed time %d - index %d/sec\n", (stop-start), 
+
+	printf("	   Elapsed time %ld - index %ld/sec\n", (stop-start),
 						 MAX_DIR_OPS/(stop-start) );
 
 /************************************ End of phase 5 ************************/
 
 phase55:
 	printf("Phase 6 ** Synchronous file creation \n");
-	printf("	   Creating a %d blocks file (%d byte blocks)\n", size
-					, blksize);
+	printf("	   Creating a %ld GB file\n", size);
 
 	time(&start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_CREAT|O_RDWR|O_SYNC, 0644)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_CREAT|O_RDWR|O_SYNC, 0644)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
@@ -274,7 +264,7 @@ phase55:
 		printf("Test too short, aborting\n");
 		goto phase6;
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	servtime = (double)((double)(stop-start)/(double)size);
 	printf("	   Average write service time %.9f ms.\n",
@@ -288,16 +278,16 @@ phase6:
 	time(&start);
 	srand(start);
 
-	if ((fd = open64(argv[1], O_LARGEFILE|O_WRONLY|O_SYNC)) == -1 ) {
+	if ((fd = open(argv[1], O_LARGEFILE|O_WRONLY|O_SYNC)) == -1 ) {
 		perror(argv[1]);
 		exit(0);
 	}
 
 	for (i=0; i<randsize; i++) {
-		rnum = (rand() % size);
+		rnum = (rand() % ((size*1024)-1));
 		rc = lseek(fd, rnum*blksize, 0);
 		if ( rc != rnum*blksize ) {
-			printf("Seek error on block %d\n", rnum);
+			printf("Seek error on block %ld\n", rnum);
 			seekerrs++;
 		}
 		rc = write(fd, block, blksize);
@@ -314,7 +304,7 @@ phase6:
 		printf("Test too short, aborting\n");
 		exit(0);
 	}
-	printf("	   Elapsed time %d - %dM/sec\n", (stop-start), 
+	printf("	   Elapsed time %ld - %ldM/sec\n", (stop-start),
 						 ((bytes/(stop-start))/1024/1024));
 	seektime = (double)((double)(stop-start)/(double)randsize);
 	printf("	   Average seek-write time %.9f ms.\n",
@@ -324,16 +314,8 @@ phase6:
 
 }
 
-usage(str)
-char	*str;
+void usage(char *str)
 {
-	printf("usage : %s <filename> <size_in_128k_blocks>\n", str);
+	printf("usage : %s <filename> <size_in_gigabytes>\n", str);
 	exit(0);
-}
-
-stats()
-{
-	printf("Total %d seek errors\n", seekerrs);
-	printf("Total %d read errors\n", readerrs);
-	printf("Total %d write errors\n", writerrs);
 }
