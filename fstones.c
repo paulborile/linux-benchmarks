@@ -63,8 +63,8 @@ char	**argv;
 	int write_opt = 0;
 	int size_in_GB = 10; // default 10GB
 	int blocksize_in_K = 1024; // default 1 MB
-	long long	bytes;
 
+	long long	bytes;
 	long long	size;
 	long int 	blocksize;
 	long int	randsize; 
@@ -126,7 +126,7 @@ HELP:
 	randsize = syncsize;
 	memset(block, 'F', blocksize);
 
-	printf("** fstones %s - (C) 1989 Paul Stephen Borile\n", Version);
+	printf("** fstones %s - (C) 1989-2022 Paul Stephen Borile\n", Version);
 	printf("Blocksize for read/write operations is %dK\n", blocksize_in_K);
 
 
@@ -143,16 +143,16 @@ HELP:
 		}
 
 		long long donebytes = 0;
-		int i = 0;
+		int ops_done = 0;
 		while (donebytes <= bytes)
 		{
 			rc = write(fd, block, blocksize);
 			if (rc != blocksize) {
-				printf("write error on block %d\n", i);
+				printf("write error on block %d\n", ops_done);
 				writerrs++;
 			}
 			donebytes += blocksize;
-			i++;
+			ops_done++;
 		}
 
 		close(fd);
@@ -165,48 +165,55 @@ HELP:
 		{
 			printf("	   Elapsed time %ld - %LdM/sec\n", (stop-start),
 								((bytes/(stop-start))/1024/1024));
-			servtime = (double)((double)(stop-start)/(double)size);
+			servtime = (double)((double)(stop-start)/(double)ops_done);
 			printf("	   Average write service time %.9f ms.\n", servtime*1000);
+		}
+	}
+
+	if ( read_opt)
+	{
+
+		printf("Phase 2 ** Sequential file reading \n");
+
+		time(&start);
+
+		if ((fd = open(filename, O_CREAT|O_RDWR, 0644)) == -1 ) {
+			perror(argv[1]);
+			exit(0);
+		}
+
+		long long donebytes = 0;
+		int ops_done = 0;
+		while (donebytes <= bytes)
+		{
+			rc = read(fd, block, blocksize);
+			if (rc != blocksize) {
+				printf("read error on block %d\n", ops_done);
+				writerrs++;
+			}
+			donebytes += blocksize;
+			ops_done++;
+		}
+
+		close(fd);
+
+		time(&stop);
+		if ((stop - start) == 0 ) {
+			printf("Test too short, aborting\n");
+		}
+		else
+		{
+			printf("	   Elapsed time %ld - %LdM/sec\n", (stop-start),
+								((bytes/(stop-start))/1024/1024));
+			servtime = (double)((double)(stop-start)/(double)ops_done);
+			printf("	   Average read service time %.9f ms.\n",
+								servtime*1000);
 		}
 	}
 
 	exit(0);
 
-/************************************ End of phase 1 ************************/
-phase2:
-
-	printf("Phase 2 ** Sequential file reading \n");
-
-	time(&start);
-
-	if ((fd = open(argv[1], O_RDONLY)) == -1 ) {
-		perror(argv[1]);
-		exit(0);
-	}
-
-	for (int i=0; i<size; i++) {
-		rc = read(fd, block, blocksize);
-		if (rc != blocksize) {
-			printf("read error on block %d\n", i);
-			readerrs++;
-		}
-	}
-
-	close(fd);
-
-	time(&stop);
-	if ((stop - start) == 0 ) {
-		printf("Test too short, aborting\n");
-		goto phase3;
-	}
-	printf("	   Elapsed time %ld - %LdM/sec\n", (stop-start),
-						 ((bytes/(stop-start))/1024/1024));
-	servtime = (double)((double)(stop-start)/(double)size);
-	printf("	   Average read service time %.9f ms.\n",
-						 servtime*1000);
-
 /************************************ End of phase 2 ************************/
-phase3:
 
 	printf("Phase 3 ** Random file read \n");
 
