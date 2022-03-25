@@ -32,7 +32,7 @@
  *     number of subroutine calls and divides which may be
  *     changed by optimisation. For comparison purposes the
  *     compiler and level of optimisation should be identified.
- *       
+ *
  ************************************************************
  *
  *     The original benchmark had a single variable I which
@@ -83,7 +83,7 @@
  *     particular run. This information is appended to file
  *     whets.res along with the results. The input section can
  *     be avoided using a command line parameter N (for example
- *     Whets.exe N).  
+ *     Whets.exe N).
  *
  *     Roy Longbottom  101323.2241@compuserve.com
  *
@@ -125,7 +125,7 @@
  * statements are then supplied to type in the run details.
  *
  ************************************************************
- * 
+ *
  * Examples of results from file whets.res
  *
  * Whetstone Single  Precision Benchmark in C/C++
@@ -177,7 +177,7 @@
  *
  * Whetstone Double  Precision Benchmark in C/C++
  *
- * Compiler          Watcom C/C++ 10.5 Win32NT 
+ * Compiler          Watcom C/C++ 10.5 Win32NT
  * Options           -otexan -zp4 -om -fp5 -5r
  *
  * Loop content                 Result           MFLOPS      MOPS   Seconds
@@ -194,27 +194,27 @@
  * MWIPS                                         67.156             100.066
  *
  *  Note different numeric results to single precision. Slight variations
- *  are normal with different compilers and sometimes optimisation levels. 
+ *  are normal with different compilers and sometimes optimisation levels.
  *
  *
  *             Example Single Precision Optimised Results
  *
  *     MWIPS   MFLOPS  MFLOPS  MFLOPS  COS     EXP     FIXPT    IF    EQUAL
  * PC            1       2       3     MOPS    MOPS    MOPS    MOPS    MOPS
- *                                                                                                                                                
+ *
  * P3  5.68    0.928   0.884   0.673   0.461   0.275   2.36    2.16   0.638
  * P4  16.4    5.09    4.03    2.66    0.526   0.342   6.36    6.00    5.28
  * P5  66.3    26.8    17.1    10.1    2.66    1.51    16.0    19.9    22.9
  * P6  161     50.3    45.2    31.5    4.46    2.77    102     20.6    119
  *
  *            Example Single Precision Non-optimised Results
- *                                                                        
+ *
  * P3  3.07    0.860   0.815   0.328   0.355   0.160   1.70    1.32   0.264
  * P4  10.0    4.68    3.51    1.27    0.482   0.298   5.73    5.20    1.18
  * P5  28.5    20.0    11.8    3.36    2.10    1.21    14.0    11.7    2.42
  * P6  81.7    47.5    37.8    10.9    3.91    2.43    51.2    42.8    7.85
  *
- *        Summary results as in whets.tbl at ftp.nosc.mil/pub/aburto 
+ *        Summary results as in whets.tbl at ftp.nosc.mil/pub/aburto
  *
  *           MFLOPS   = Geometric Mean of three MFLOPS loops
  *           VAX MIPS = 5 * Geometric Mean of last three items above
@@ -225,7 +225,7 @@
  * P3 Clone   AM80386DX with 387        128K    40    5.68    0.820   7.40
  * P4 Escom   80486DX2 CIS chipset      128K    66    16.4    3.79    29.3
  * P5 Escom   Pentium Neptune chipset   256K   100    66.3    16.7    96.9
- * P6 Dell    PentiumPro 440FX PCIset   256K   200    161     41.5    315 
+ * P6 Dell    PentiumPro 440FX PCIset   256K   200    161     41.5    315
  *
  * P3 Clone   AM80386DX with 387        128K    40    3.07    0.613   4.20
  * P4 Escom   80486DX2 CIS chipset      128K    66    10.0    2.75    16.4
@@ -255,9 +255,9 @@
  *
  **************************************************************************
  */
- 
+
  #include <math.h>       /* for sin, exp etc.           */
- #include <stdio.h>      /* standard I/O                */ 
+ #include <stdio.h>      /* standard I/O                */
  #include <string.h>     /* for strcpy - 3 occurrences  */
  #include <stdlib.h>     /* for exit   - 1 occurrence   */
  #include <float.h>
@@ -284,12 +284,12 @@
 /* #define WIN32       */
 /* #define POSIX1      */
 /***********************/
- 
+
 /*PRECISION PRECISION PRECISION PRECISION PRECISION PRECISION PRECISION*/
 
- /* #define DP */
- 
- #ifdef DP 
+/* #define DP */
+
+ #ifdef DP
     #define SPDP double
     #define Precision "Double"
  #else
@@ -300,30 +300,30 @@
 
 /*PRECOMPILE  PRECOMPILE  PRECOMPILE  PRECOMPILE  PRECOMPILE  PRECOMPILE*/
 
- /* #define PRECOMP */
- 
- #ifdef PRECOMP 
+/* #define PRECOMP */
+
+ #ifdef PRECOMP
     #define precompiler "INSERT COMPILER NAME HERE"
     #define preoptions  "INSERT OPTIMISATION OPTIONS HERE"
  #endif
 
 
- void whetstones(long xtra, long x100, int calibrate);  
- void pa(SPDP e[4], SPDP t, SPDP t2);
- void po(SPDP e1[4], long j, long k, long l);
- void p3(SPDP *x, SPDP *y, SPDP *z, SPDP t, SPDP t1, SPDP t2);
- void pout(char title[22], float ops, int type, SPDP checknum,
-		  SPDP time, int calibrate, int section);
-  
+void whetstones(long xtra, long x100, int calibrate);
+void pa(SPDP e[4], SPDP t, SPDP t2);
+void po(SPDP e1[4], long j, long k, long l);
+void p3(SPDP *x, SPDP *y, SPDP *z, SPDP t, SPDP t1, SPDP t2);
+void pout(char title[22], float ops, int type, SPDP checknum,
+          SPDP time, int calibrate, int section);
 
- static SPDP loop_time[9];
- static SPDP loop_mops[9];
- static SPDP loop_mflops[9];
- static SPDP TimeUsed;
- static SPDP mwips;
- static char headings[9][18];
- static SPDP Check;
- static SPDP results[9];
+
+static SPDP loop_time[9];
+static SPDP loop_mops[9];
+static SPDP loop_mflops[9];
+static SPDP TimeUsed;
+static SPDP mwips;
+static char headings[9][18];
+static SPDP Check;
+static SPDP results[9];
 
 main(int argc, char *argv[])
 {
@@ -336,503 +336,509 @@ main(int argc, char *argv[])
     char compiler[80] = " ", options[256] = " ", general[10][80] = {" "};
     char *endit = " ";
     char *getinput = "Yes";
-  
+
     printf("\n");
-    printf("##########################################\n"); 
+    printf("##########################################\n");
     printf("%s Precision C/C++ Whetstone Benchmark\n\n", Precision);
 
 
     if (argc > 1)
-     {
-	switch (argv[1][0])
-	{
-	     case 'N':
-	       getinput = "No";
-	       break;
-	     case 'n':
-	       getinput = "No";
-	       break;
-	}
-     }
-   if (getinput == "No")
     {
-       printf ("No run time input data\n\n");
+        switch (argv[1][0])
+        {
+        case 'N':
+            getinput = "No";
+            break;
+        case 'n':
+            getinput = "No";
+            break;
+        }
     }
-    
-    outfile = fopen("whets.res","a+");
+    if (getinput == "No")
+    {
+        printf ("No run time input data\n\n");
+    }
+
+    outfile = fopen("whets.res", "a+");
     if (outfile == NULL)
-      {
-       printf ("Cannot open results file \n\n");
-       printf("Press RETURN to exit\n");
-       gets(endit);
-       exit (0);
-      }
-	    
-  printf("Calibrate\n");
-  do
-   {
-    TimeUsed=0;
-	    
-    whetstones(xtra,x100,calibrate);
-	    
-    printf("%11.2f Seconds %10.0lf   Passes (x 100)\n",
-				     TimeUsed,(SPDP)(xtra));
-    calibrate++;
-    count--;
-
-    if (TimeUsed > 2.0)
-      {
-       count = 0;
-      }
-       else
-      {
-       xtra = xtra * 5;
-      }
-   }
-   
-   while (count > 0);
-       
-   if (TimeUsed > 0) xtra = (long)((SPDP)(duration * xtra) / TimeUsed);
-   if (xtra < 1) xtra = 1;
-       
-   calibrate = 0;
-  
-   printf("\nUse %d  passes (x 100)\n", xtra);
-
-   printf("\n          %s Precision C/C++ Whetstone Benchmark",Precision);
-   
-   #ifdef PRECOMP
-      printf("\n          Compiler  %s", precompiler);
-      printf("\n          Options   %s\n", preoptions);
-   #else
-      printf("\n");
-   #endif
-   
-   printf("\nLoop content                  Result              MFLOPS "
-				"     MOPS   Seconds\n\n");
-
-   TimeUsed=0;
-   whetstones(xtra,x100,calibrate);
-
-   printf("\nMWIPS            ");
-   if (TimeUsed>0)
-     {
-      mwips=(float)(xtra) * (float)(x100) / (10 * TimeUsed);
-     }
-      else
-     {
-      mwips = 0;
-     }  
-   
-   printf("%39.3f%19.3f\n\n",mwips,TimeUsed);
-     
-   if (Check == 0) printf("Wrong answer  ");
-
-	    
-
- /************************************************************************/
- /*             Type details of hardware, software etc.                  */
- /************************************************************************/
-
- if (getinput == "Yes")
-   {
-     printf ("Enter the following which will be added with results to file WHETS.RES\n");
-     printf ("When submitting a number of results you need only provide details once\n");
-     printf ("but a cross reference such as an abbreviated CPU type would be useful.\n");    
-     printf ("You can kill (exit or close) the program now and no data will be added.\n\n");
-    
-     printf ("Date:       ");
-     gets(general[0]);
-    
-     printf ("Computer:   ");
-     gets(general[1]);
-    
-     printf ("CPU chip:   ");
-     gets(general[2]);
-     
-     printf ("Clock MHz:  ");
-     gets(general[3]);
-     
-     printf ("Cache size: ");
-     gets(general[4]);
-     
-     printf ("H/W options:");
-     gets(general[5]);
-      
-     printf ("OS version: ");
-     gets(general[6]);
-    
-     #ifdef PRECOMP
-	strcpy (compiler, precompiler);
-	strcpy (options, preoptions);
-     #else
-	printf ("Compiler:   ");
-	gets(compiler);
-    
-	printf ("Options:    ");
-	gets(options);
-     #endif
-     
-     printf ("Your name:  ");
-     gets(general[7]);
-     
-     printf ("From:       ");
-     gets(general[8]);
-     
-     printf ("Email:      ");
-     gets(general[9]);
-   }
-  else
-   {
-     #ifdef PRECOMP
-	strcpy (compiler, precompiler);
-	strcpy (options, preoptions);
-     #endif
-   }
-
- /************************************************************************/
- /*               Add results to output file whets.res                   */
- /************************************************************************/
- fprintf (outfile, "\n"); 
- fprintf (outfile, "##############################################\n");
- fprintf (outfile, "Whetstone %s  Precision Benchmark in C/C++\n\n",Precision);
- fprintf (outfile, "Date         %s\n", general[0]);
- fprintf (outfile, "Model        %s\n", general[1]);
- fprintf (outfile, "CPU          %s\n", general[2]);
- fprintf (outfile, "Clock MHz    %s\n", general[3]);
- fprintf (outfile, "Cache        %s\n", general[4]);
- fprintf (outfile, "H/W options  %s\n", general[5]);
- fprintf (outfile, "OS           %s\n", general[6]);
- fprintf (outfile, "Compiler     %s\n", compiler);
- fprintf (outfile, "Options      %s\n", options);
- fprintf (outfile, "Run by       %s\n", general[7]);
- fprintf (outfile, "From         %s\n", general[8]);
- fprintf (outfile, "Email        %s\n", general[9]);
- fprintf (outfile, "\n");
-
- fprintf (outfile,"Loop content                   Result"
-	    "              MFLOPS      MOPS   Seconds\n\n"); 
-			   
- for (section=1; section<9; section++)
     {
-     fprintf (outfile, "%s  %24.17f   ", headings[section],
-					      results[section]);
-     if (loop_mops[section] == 99999)
-       {          
-	fprintf (outfile,"  %9.3f           %9.3f\n",
-		 loop_mflops[section], loop_time[section]);
-       }
-       else
-       {       
-	fprintf (outfile, "            %9.3f %9.3f\n",
-	     loop_mops[section], loop_time[section], results[section]);
-       }
+        printf ("Cannot open results file \n\n");
+        printf("Press RETURN to exit\n");
+        gets(endit);
+        exit (0);
     }
 
- fprintf (outfile, "\nMWIPS             ");
- fprintf (outfile, "%39.3f%20.3f\n\n",mwips,TimeUsed);
- fprintf (outfile, "Results  to  load  to  spreadsheet             ");
- fprintf (outfile, "     MWIPS   Mflops1   Mflops2   Mflops3   Cosmops"
-		      "   Expmops  Fixpmops    Ifmops    Eqmops\n");
- fprintf (outfile, "Results  to  load  to  spreadsheet             ");   
-		
- fprintf (outfile, " %9.3f %9.3f %9.3f", mwips, loop_mflops[1],
-							 loop_mflops[2]);
- fprintf (outfile, " %9.3f %9.3f %9.3f", loop_mflops[6],
-					     loop_mops[5], loop_mops[8]);
- fprintf (outfile, " %9.3f %9.3f %9.3f\n\n", loop_mops[4],
-					      loop_mops[3], loop_mops[7]);
-    
- fclose (outfile);
+    printf("Calibrate\n");
+    do
+    {
+        TimeUsed=0;
 
- printf ("\n");
- printf ("A new results file will have been created in the same directory as the\n");
- printf (".EXE files if one did not already exist. If you made a mistake on input, \n");
- printf ("you can use a text editor to correct it, delete the results or copy \n");
- printf ("them to a different file name. If you intend to run multiple tests you\n");
- printf ("you may wish to rename WHETS.RES with a more informative title.\n\n");
- printf ("Please submit feedback and results files to aburto@nosc.mil or to\n");
- printf ("Roy_Longbottom@compuserve.com\n\n");
+        whetstones(xtra, x100, calibrate);
 
-	   
+        printf("%11.2f Seconds %10.0lf   Passes (x 100)\n",
+               TimeUsed, (SPDP)(xtra));
+        calibrate++;
+        count--;
+
+        if (TimeUsed > 2.0)
+        {
+            count = 0;
+        }
+        else
+        {
+            xtra = xtra * 5;
+        }
+    }
+
+    while (count > 0);
+
+    if (TimeUsed > 0)
+        xtra = (long)((SPDP)(duration * xtra) / TimeUsed);
+    if (xtra < 1)
+        xtra = 1;
+
+    calibrate = 0;
+
+    printf("\nUse %d  passes (x 100)\n", xtra);
+
+    printf("\n          %s Precision C/C++ Whetstone Benchmark", Precision);
+
+   #ifdef PRECOMP
+    printf("\n          Compiler  %s", precompiler);
+    printf("\n          Options   %s\n", preoptions);
+   #else
+    printf("\n");
+   #endif
+
+    printf("\nLoop content                  Result              MFLOPS "
+           "     MOPS   Seconds\n\n");
+
+    TimeUsed=0;
+    whetstones(xtra, x100, calibrate);
+
+    printf("\nMWIPS            ");
+    if (TimeUsed>0)
+    {
+        mwips=(float)(xtra) * (float)(x100) / (10 * TimeUsed);
+    }
+    else
+    {
+        mwips = 0;
+    }
+
+    printf("%39.3f%19.3f\n\n", mwips, TimeUsed);
+
+    if (Check == 0)
+        printf("Wrong answer  ");
+
+
+
+    /************************************************************************/
+    /*             Type details of hardware, software etc.                  */
+    /************************************************************************/
+
+    if (getinput == "Yes")
+    {
+        printf ("Enter the following which will be added with results to file WHETS.RES\n");
+        printf ("When submitting a number of results you need only provide details once\n");
+        printf ("but a cross reference such as an abbreviated CPU type would be useful.\n");
+        printf ("You can kill (exit or close) the program now and no data will be added.\n\n");
+
+        printf ("Date:       ");
+        gets(general[0]);
+
+        printf ("Computer:   ");
+        gets(general[1]);
+
+        printf ("CPU chip:   ");
+        gets(general[2]);
+
+        printf ("Clock MHz:  ");
+        gets(general[3]);
+
+        printf ("Cache size: ");
+        gets(general[4]);
+
+        printf ("H/W options:");
+        gets(general[5]);
+
+        printf ("OS version: ");
+        gets(general[6]);
+
+     #ifdef PRECOMP
+        strcpy (compiler, precompiler);
+        strcpy (options, preoptions);
+     #else
+        printf ("Compiler:   ");
+        gets(compiler);
+
+        printf ("Options:    ");
+        gets(options);
+     #endif
+
+        printf ("Your name:  ");
+        gets(general[7]);
+
+        printf ("From:       ");
+        gets(general[8]);
+
+        printf ("Email:      ");
+        gets(general[9]);
+    }
+    else
+    {
+     #ifdef PRECOMP
+        strcpy (compiler, precompiler);
+        strcpy (options, preoptions);
+     #endif
+    }
+
+    /************************************************************************/
+    /*               Add results to output file whets.res                   */
+    /************************************************************************/
+    fprintf (outfile, "\n");
+    fprintf (outfile, "##############################################\n");
+    fprintf (outfile, "Whetstone %s  Precision Benchmark in C/C++\n\n", Precision);
+    fprintf (outfile, "Date         %s\n", general[0]);
+    fprintf (outfile, "Model        %s\n", general[1]);
+    fprintf (outfile, "CPU          %s\n", general[2]);
+    fprintf (outfile, "Clock MHz    %s\n", general[3]);
+    fprintf (outfile, "Cache        %s\n", general[4]);
+    fprintf (outfile, "H/W options  %s\n", general[5]);
+    fprintf (outfile, "OS           %s\n", general[6]);
+    fprintf (outfile, "Compiler     %s\n", compiler);
+    fprintf (outfile, "Options      %s\n", options);
+    fprintf (outfile, "Run by       %s\n", general[7]);
+    fprintf (outfile, "From         %s\n", general[8]);
+    fprintf (outfile, "Email        %s\n", general[9]);
+    fprintf (outfile, "\n");
+
+    fprintf (outfile, "Loop content                   Result"
+             "              MFLOPS      MOPS   Seconds\n\n");
+
+    for (section=1; section<9; section++)
+    {
+        fprintf (outfile, "%s  %24.17f   ", headings[section],
+                 results[section]);
+        if (loop_mops[section] == 99999)
+        {
+            fprintf (outfile, "  %9.3f           %9.3f\n",
+                     loop_mflops[section], loop_time[section]);
+        }
+        else
+        {
+            fprintf (outfile, "            %9.3f %9.3f\n",
+                     loop_mops[section], loop_time[section], results[section]);
+        }
+    }
+
+    fprintf (outfile, "\nMWIPS             ");
+    fprintf (outfile, "%39.3f%20.3f\n\n", mwips, TimeUsed);
+    fprintf (outfile, "Results  to  load  to  spreadsheet             ");
+    fprintf (outfile, "     MWIPS   Mflops1   Mflops2   Mflops3   Cosmops"
+             "   Expmops  Fixpmops    Ifmops    Eqmops\n");
+    fprintf (outfile, "Results  to  load  to  spreadsheet             ");
+
+    fprintf (outfile, " %9.3f %9.3f %9.3f", mwips, loop_mflops[1],
+             loop_mflops[2]);
+    fprintf (outfile, " %9.3f %9.3f %9.3f", loop_mflops[6],
+             loop_mops[5], loop_mops[8]);
+    fprintf (outfile, " %9.3f %9.3f %9.3f\n\n", loop_mops[4],
+             loop_mops[3], loop_mops[7]);
+
+    fclose (outfile);
+
+    printf ("\n");
+    printf ("A new results file will have been created in the same directory as the\n");
+    printf (".EXE files if one did not already exist. If you made a mistake on input, \n");
+    printf ("you can use a text editor to correct it, delete the results or copy \n");
+    printf ("them to a different file name. If you intend to run multiple tests you\n");
+    printf ("you may wish to rename WHETS.RES with a more informative title.\n\n");
+    printf ("Please submit feedback and results files to aburto@nosc.mil or to\n");
+    printf ("Roy_Longbottom@compuserve.com\n\n");
+
+
 }
 
-    void whetstones(long xtra, long x100, int calibrate)
-      {
+void whetstones(long xtra, long x100, int calibrate)
+{
 
-	long n1,n2,n3,n4,n5,n6,n7,n8,i,ix,n1mult;
-	SPDP x,y,z;              
-	long j,k,l;
-	SPDP e1[4],timea,timeb, dtime();
-			
-	SPDP t =  0.49999975;
-	SPDP t0 = t;        
-	SPDP t1 = 0.50000025;
-	SPDP t2 = 2.0;
-		
-	Check=0.0;
-       
-	n1 = 12*x100;
-	n2 = 14*x100;
-	n3 = 345*x100;
-	n4 = 210*x100;
-	n5 = 32*x100;
-	n6 = 899*x100;
-	n7 = 616*x100;
-	n8 = 93*x100;
-	n1mult = 10;
+    long n1, n2, n3, n4, n5, n6, n7, n8, i, ix, n1mult;
+    SPDP x, y, z;
+    long j, k, l;
+    SPDP e1[4], timea, timeb, dtime();
 
-	/* Section 1, Array elements */
+    SPDP t =  0.49999975;
+    SPDP t0 = t;
+    SPDP t1 = 0.50000025;
+    SPDP t2 = 2.0;
 
-	e1[0] = 1.0;
-	e1[1] = -1.0;
-	e1[2] = -1.0;
-	e1[3] = -1.0;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0; i<n1*n1mult; i++)
-		  {
-		      e1[0] = (e1[0] + e1[1] + e1[2] - e1[3]) * t;
-		      e1[1] = (e1[0] + e1[1] - e1[2] + e1[3]) * t;
-		      e1[2] = (e1[0] - e1[1] + e1[2] + e1[3]) * t;
-		      e1[3] = (-e1[0] + e1[1] + e1[2] + e1[3]) * t;
-		  }
-		t = 1.0 - t;
-	      }
-	    t =  t0;                    
-	 }
-	timeb = (dtime()-timea)/(SPDP)(n1mult);
-	pout("N1 floating point\0",(float)(n1*16)*(float)(xtra),
-			     1,e1[3],timeb,calibrate,1);
+    Check=0.0;
 
-	/* Section 2, Array as parameter */
+    n1 = 12*x100;
+    n2 = 14*x100;
+    n3 = 345*x100;
+    n4 = 210*x100;
+    n5 = 32*x100;
+    n6 = 899*x100;
+    n7 = 616*x100;
+    n8 = 93*x100;
+    n1mult = 10;
 
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      { 
-		for(i=0; i<n2; i++)
-		  {
-		     pa(e1,t,t2);
-		  }
-		t = 1.0 - t;
-	      }
-	    t =  t0;
-	 }
-	timeb = dtime()-timea;
-	pout("N2 floating point\0",(float)(n2*96)*(float)(xtra),
-			     1,e1[3],timeb,calibrate,2);
+    /* Section 1, Array elements */
 
-	/* Section 3, Conditional jumps */
-	j = 1;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0; i<n3; i++)
-		  {
-		     if(j==1)       j = 2;
-		     else           j = 3;
-		     if(j>2)        j = 0;
-		     else           j = 1;
-		     if(j<1)        j = 1;
-		     else           j = 0;
-		  }
-	      }
-	 }
-	timeb = dtime()-timea;
-	pout("N3 if then else  \0",(float)(n3*3)*(float)(xtra),
-			2,(SPDP)(j),timeb,calibrate,3);
+    e1[0] = 1.0;
+    e1[1] = -1.0;
+    e1[2] = -1.0;
+    e1[3] = -1.0;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n1*n1mult; i++)
+            {
+                e1[0] = (e1[0] + e1[1] + e1[2] - e1[3]) * t;
+                e1[1] = (e1[0] + e1[1] - e1[2] + e1[3]) * t;
+                e1[2] = (e1[0] - e1[1] + e1[2] + e1[3]) * t;
+                e1[3] = (-e1[0] + e1[1] + e1[2] + e1[3]) * t;
+            }
+            t = 1.0 - t;
+        }
+        t =  t0;
+    }
+    timeb = (dtime()-timea)/(SPDP)(n1mult);
+    pout("N1 floating point\0", (float)(n1*16)*(float)(xtra),
+         1, e1[3], timeb, calibrate, 1);
 
-	/* Section 4, Integer arithmetic */
-	j = 1;
-	k = 2;
-	l = 3;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0; i<n4; i++)
-		  {
-		     j = j *(k-j)*(l-k);
-		     k = l * k - (l-j) * k;
-		     l = (l-k) * (k+j);
-		     e1[l-2] = j + k + l;
-		     e1[k-2] = j * k * l;
-		  }
-	      }
-	 }
-	timeb = dtime()-timea;
-	x = e1[0]+e1[1];
-	pout("N4 fixed point   \0",(float)(n4*15)*(float)(xtra),
-				 2,x,timeb,calibrate,4);
-     
-	/* Section 5, Trig functions */
-	x = 0.5;
-	y = 0.5;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=1; i<n5; i++)
-		  {
-		     x = t*atan(t2*sin(x)*cos(x)/(cos(x+y)+cos(x-y)-1.0));
-		     y = t*atan(t2*sin(y)*cos(y)/(cos(x+y)+cos(x-y)-1.0));
-		  }
-		t = 1.0 - t;
-	      }
-	    t = t0;
-	 }
-	timeb = dtime()-timea;
-	pout("N5 sin,cos etc.  \0",(float)(n5*26)*(float)(xtra),
-				 2,y,timeb,calibrate,5);
-  
-	/* Section 6, Procedure calls */
-	x = 1.0;
-	y = 1.0;
-	z = 1.0;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0; i<n6; i++)
-		  {
-		     p3(&x,&y,&z,t,t1,t2);
-		  }
-	      }
-	 }
-	timeb = dtime()-timea;
-	pout("N6 floating point\0",(float)(n6*6)*(float)(xtra),
-				1,z,timeb,calibrate,6);
-  
-	/* Section 7, Array refrences */
-	j = 0;
-	k = 1;
-	l = 2;
-	e1[0] = 1.0;
-	e1[1] = 2.0;
-	e1[2] = 3.0;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0;i<n7;i++)
-		  {
-		     po(e1,j,k,l);
-		  }
-	      }
-	 }
-	timeb = dtime()-timea;
-	pout("N7 assignments   \0",(float)(n7*3)*(float)(xtra),
-			    2,e1[2],timeb,calibrate,7);
-	
-	/* Section 8, Standard functions */
-	x = 0.75;
-	timea = dtime();
-	 {
-	    for (ix=0; ix<xtra; ix++)
-	      {
-		for(i=0; i<n8; i++)
-		  {
-		     x = sqrt(exp(log(x)/t1));
-		  }
-	      }
-	 }
-	timeb = dtime()-timea;
-	pout("N8 exp,sqrt etc. \0",(float)(n8*4)*(float)(xtra),
-				2,x,timeb,calibrate,8);
+    /* Section 2, Array as parameter */
 
-	return;
-      }
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n2; i++)
+            {
+                pa(e1, t, t2);
+            }
+            t = 1.0 - t;
+        }
+        t =  t0;
+    }
+    timeb = dtime()-timea;
+    pout("N2 floating point\0", (float)(n2*96)*(float)(xtra),
+         1, e1[3], timeb, calibrate, 2);
 
+    /* Section 3, Conditional jumps */
+    j = 1;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n3; i++)
+            {
+                if(j==1)
+                    j = 2;
+                else j = 3;
+                if(j>2)
+                    j = 0;
+                else j = 1;
+                if(j<1)
+                    j = 1;
+                else j = 0;
+            }
+        }
+    }
+    timeb = dtime()-timea;
+    pout("N3 if then else  \0", (float)(n3*3)*(float)(xtra),
+         2, (SPDP)(j), timeb, calibrate, 3);
 
-    void pa(SPDP e[4], SPDP t, SPDP t2)
-      {
-	 long j;
-	 for(j=0;j<6;j++)
-	    {
-	       e[0] = (e[0]+e[1]+e[2]-e[3])*t;
-	       e[1] = (e[0]+e[1]-e[2]+e[3])*t;
-	       e[2] = (e[0]-e[1]+e[2]+e[3])*t;
-	       e[3] = (-e[0]+e[1]+e[2]+e[3])/t2;
-	    }
+    /* Section 4, Integer arithmetic */
+    j = 1;
+    k = 2;
+    l = 3;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n4; i++)
+            {
+                j = j *(k-j)*(l-k);
+                k = l * k - (l-j) * k;
+                l = (l-k) * (k+j);
+                e1[l-2] = j + k + l;
+                e1[k-2] = j * k * l;
+            }
+        }
+    }
+    timeb = dtime()-timea;
+    x = e1[0]+e1[1];
+    pout("N4 fixed point   \0", (float)(n4*15)*(float)(xtra),
+         2, x, timeb, calibrate, 4);
 
-	 return;
-      }
+    /* Section 5, Trig functions */
+    x = 0.5;
+    y = 0.5;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=1; i<n5; i++)
+            {
+                x = t*atan(t2*sin(x)*cos(x)/(cos(x+y)+cos(x-y)-1.0));
+                y = t*atan(t2*sin(y)*cos(y)/(cos(x+y)+cos(x-y)-1.0));
+            }
+            t = 1.0 - t;
+        }
+        t = t0;
+    }
+    timeb = dtime()-timea;
+    pout("N5 sin,cos etc.  \0", (float)(n5*26)*(float)(xtra),
+         2, y, timeb, calibrate, 5);
 
-    void po(SPDP e1[4], long j, long k, long l)
-      {
-	 e1[j] = e1[k];
-	 e1[k] = e1[l];
-	 e1[l] = e1[j];
-	 return;
-      }
+    /* Section 6, Procedure calls */
+    x = 1.0;
+    y = 1.0;
+    z = 1.0;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n6; i++)
+            {
+                p3(&x, &y, &z, t, t1, t2);
+            }
+        }
+    }
+    timeb = dtime()-timea;
+    pout("N6 floating point\0", (float)(n6*6)*(float)(xtra),
+         1, z, timeb, calibrate, 6);
 
-    void p3(SPDP *x, SPDP *y, SPDP *z, SPDP t, SPDP t1, SPDP t2)
-      {
-	 *x = *y;
-	 *y = *z;
-	 *x = t * (*x + *y);
-	 *y = t1 * (*x + *y);
-	 *z = (*x + *y)/t2;
-	 return;
-      }
+    /* Section 7, Array refrences */
+    j = 0;
+    k = 1;
+    l = 2;
+    e1[0] = 1.0;
+    e1[1] = 2.0;
+    e1[2] = 3.0;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n7; i++)
+            {
+                po(e1, j, k, l);
+            }
+        }
+    }
+    timeb = dtime()-timea;
+    pout("N7 assignments   \0", (float)(n7*3)*(float)(xtra),
+         2, e1[2], timeb, calibrate, 7);
+
+    /* Section 8, Standard functions */
+    x = 0.75;
+    timea = dtime();
+    {
+        for (ix=0; ix<xtra; ix++)
+        {
+            for(i=0; i<n8; i++)
+            {
+                x = sqrt(exp(log(x)/t1));
+            }
+        }
+    }
+    timeb = dtime()-timea;
+    pout("N8 exp,sqrt etc. \0", (float)(n8*4)*(float)(xtra),
+         2, x, timeb, calibrate, 8);
+
+    return;
+}
 
 
-    void pout(char title[18], float ops, int type, SPDP checknum,
-	      SPDP time, int calibrate, int section)
-      {
-	SPDP mops,mflops;
+void pa(SPDP e[4], SPDP t, SPDP t2)
+{
+    long j;
+    for(j=0; j<6; j++)
+    {
+        e[0] = (e[0]+e[1]+e[2]-e[3])*t;
+        e[1] = (e[0]+e[1]-e[2]+e[3])*t;
+        e[2] = (e[0]-e[1]+e[2]+e[3])*t;
+        e[3] = (-e[0]+e[1]+e[2]+e[3])/t2;
+    }
 
-	Check = Check + checknum;
-	loop_time[section] = time;
-	strcpy (headings[section],title);
-	TimeUsed =  TimeUsed + time;
-	if (calibrate == 1)
-     
-	  {
-	      results[section] = checknum;
-	  }
-	if (calibrate == 0)
-	  {              
-	    printf("%s %24.17f    ",headings[section],results[section]);    
-       
-	    if (type == 1)
-	     {
-		if (time>0)
-		 {
-		    mflops = ops/(1000000L*time);
-		 }
-		else
-		 {
-		   mflops = 0;
-		 }
-		loop_mops[section] = 99999;
-		loop_mflops[section] = mflops;
-		printf(" %9.3f          %9.3f\n",
-		 loop_mflops[section], loop_time[section]);                
-	     }
-	    else
-	     {
-		if (time>0)
-		 {
-		   mops = ops/(1000000L*time);
-		 }
-		else
-		 {
-		   mops = 0;
-		 }
-		loop_mops[section] = mops;
-		loop_mflops[section] = 0;                 
-		printf("           %9.3f%9.3f\n",
-		 loop_mops[section], loop_time[section]);
-	     }
-	  }
-	  
-	return;
-      }
+    return;
+}
+
+void po(SPDP e1[4], long j, long k, long l)
+{
+    e1[j] = e1[k];
+    e1[k] = e1[l];
+    e1[l] = e1[j];
+    return;
+}
+
+void p3(SPDP *x, SPDP *y, SPDP *z, SPDP t, SPDP t1, SPDP t2)
+{
+    *x = *y;
+    *y = *z;
+    *x = t * (*x + *y);
+    *y = t1 * (*x + *y);
+    *z = (*x + *y)/t2;
+    return;
+}
+
+
+void pout(char title[18], float ops, int type, SPDP checknum,
+          SPDP time, int calibrate, int section)
+{
+    SPDP mops, mflops;
+
+    Check = Check + checknum;
+    loop_time[section] = time;
+    strcpy (headings[section], title);
+    TimeUsed =  TimeUsed + time;
+    if (calibrate == 1)
+
+    {
+        results[section] = checknum;
+    }
+    if (calibrate == 0)
+    {
+        printf("%s %24.17f    ", headings[section], results[section]);
+
+        if (type == 1)
+        {
+            if (time>0)
+            {
+                mflops = ops/(1000000L*time);
+            }
+            else
+            {
+                mflops = 0;
+            }
+            loop_mops[section] = 99999;
+            loop_mflops[section] = mflops;
+            printf(" %9.3f          %9.3f\n",
+                   loop_mflops[section], loop_time[section]);
+        }
+        else
+        {
+            if (time>0)
+            {
+                mops = ops/(1000000L*time);
+            }
+            else
+            {
+                mops = 0;
+            }
+            loop_mops[section] = mops;
+            loop_mflops[section] = 0;
+            printf("           %9.3f%9.3f\n",
+                   loop_mops[section], loop_time[section]);
+        }
+    }
+
+    return;
+}
 
 
 /*****************************************************/
@@ -853,7 +859,7 @@ main(int argc, char *argv[])
 /* {                                                 */
 /*  double starttime,benchtime,dtime();              */
 /*                                                   */
-/*  starttime = dtime();                             */ 
+/*  starttime = dtime();                             */
 /*  [routine to time]                                */
 /*  benchtime = dtime() - starttime;                 */
 /* }                                                 */
@@ -873,20 +879,20 @@ main(int argc, char *argv[])
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- struct tt
-       {
-	long  days;
-	long  minutes;
-	long  ticks;
-       } tt;
+    struct tt
+    {
+        long days;
+        long minutes;
+        long ticks;
+    } tt;
 
- DateStamp(&tt);
+    DateStamp(&tt);
 
- q = ((SPDP)(tt.ticks + (tt.minutes * 60L * 50L))) / (SPDP)HZ;
+    q = ((SPDP)(tt.ticks + (tt.minutes * 60L * 50L))) / (SPDP)HZ;
 
- return q;
+    return q;
 }
 #endif
 
@@ -901,21 +907,21 @@ SPDP dtime()
 
 #ifdef hpux
 #include <sys/syscall.h>
-#define getrusage(a,b) syscall(SYS_getrusage,a,b)
+#define getrusage(a, b) syscall(SYS_getrusage, a, b)
 #endif
 
 struct rusage rusage;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- getrusage(RUSAGE_SELF,&rusage);
+    getrusage(RUSAGE_SELF, &rusage);
 
- q = (SPDP)(rusage.ru_utime.tv_sec);
- q = q + (SPDP)(rusage.ru_utime.tv_usec) * 1.0e-06;
-	
- return q;
+    q = (SPDP)(rusage.ru_utime.tv_sec);
+    q = q + (SPDP)(rusage.ru_utime.tv_usec) * 1.0e-06;
+
+    return q;
 }
 #endif
 
@@ -937,13 +943,13 @@ struct tms tms;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- times(&tms);
+    times(&tms);
 
- q = (SPDP)(tms.tms_utime) / (SPDP)HZ;
-	
- return q;
+    q = (SPDP)(tms.tms_utime) / (SPDP)HZ;
+
+    return q;
 }
 #endif
 
@@ -960,23 +966,23 @@ SPDP dtime()
 #endif
 
 struct tbuffer_t
-       {
-	int proc_user_time;
-	int proc_system_time;
-	int child_user_time;
-	int child_system_time;
-       };
+{
+    int proc_user_time;
+    int proc_system_time;
+    int child_user_time;
+    int child_system_time;
+};
 struct tbuffer_t tms;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- times(&tms);
+    times(&tms);
 
- q = (SPDP)(tms.proc_user_time) / (SPDP)HZ;
-	
- return q;
+    q = (SPDP)(tms.proc_user_time) / (SPDP)HZ;
+
+    return q;
 }
 #endif
 
@@ -993,15 +999,15 @@ struct time tnow;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- gettime(&tnow);
+    gettime(&tnow);
 
- q = 60.0 * (SPDP)(tnow.ti_min);
- q = q + (SPDP)(tnow.ti_sec);
- q = q + (SPDP)(tnow.ti_hund)/(SPDP)HZ;
-	
- return q;
+    q = 60.0 * (SPDP)(tnow.ti_min);
+    q = q + (SPDP)(tnow.ti_sec);
+    q = q + (SPDP)(tnow.ti_hund)/(SPDP)HZ;
+
+    return q;
 }
 #endif
 
@@ -1019,11 +1025,11 @@ clock_t tnow;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- tnow = clock();
- q = (SPDP)tnow / (SPDP)HZ;
- return q;
+    tnow = clock();
+    q = (SPDP)tnow / (SPDP)HZ;
+    return q;
 }
 #endif
 
@@ -1037,11 +1043,11 @@ SPDP dtime()
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- q = (SPDP)clock() / (SPDP)HZ;
-	
- return q;
+    q = (SPDP)clock() / (SPDP)HZ;
+
+    return q;
 }
 #endif
 
@@ -1054,11 +1060,11 @@ extern double dclock();
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- q = dclock();
-	
- return q;
+    q = dclock();
+
+    return q;
 }
 #endif
 
@@ -1072,11 +1078,11 @@ fortran double second();
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- second(&q);
-	
- return q;
+    second(&q);
+
+    return q;
 }
 #endif
 
@@ -1091,12 +1097,12 @@ SPDP dtime()
 
 SPDP dtime()
 {
- SPDP q;
- clock_t   clock(void);
+    SPDP q;
+    clock_t   clock(void);
 
- q = (SPDP)clock() / (SPDP)CLOCKS_PER_SEC;
+    q = (SPDP)clock() / (SPDP)CLOCKS_PER_SEC;
 
- return q;
+    return q;
 }
 #endif
 
@@ -1111,12 +1117,12 @@ struct timeval tnow;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- gettimeofday(&tnow,NULL);
- q = (SPDP)tnow.tv_sec + (SPDP)tnow.tv_usec * 1.0e-6;
+    gettimeofday(&tnow, NULL);
+    q = (SPDP)tnow.tv_sec + (SPDP)tnow.tv_usec * 1.0e-6;
 
- return q;
+    return q;
 }
 #endif
 
@@ -1131,13 +1137,13 @@ struct tmsu rusage;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- timesu(&rusage);
+    timesu(&rusage);
 
- q = (SPDP)(rusage.tms_utime) * 1.0e-06;
-	
- return q;
+    q = (SPDP)(rusage.tms_utime) * 1.0e-06;
+
+    return q;
 }
 #endif
 
@@ -1152,9 +1158,9 @@ SPDP dtime()
 #include <Timer.h>
 #include <stdlib.h>
 
-static TMTask   mgrTimer;
-static Boolean  mgrInited = false;
-static SPDP     mgrClock;
+static TMTask mgrTimer;
+static Boolean mgrInited = false;
+static SPDP mgrClock;
 
 #define RMV_TIMER RmvTime( (QElemPtr)&mgrTimer )
 #define MAX_TIME  1800000000L
@@ -1166,28 +1172,32 @@ static SPDP     mgrClock;
 
 static void Remove_timer( )
 {
- RMV_TIMER;
- mgrInited = false;
+    RMV_TIMER;
+    mgrInited = false;
 }
 
 SPDP dtime( )
 {
- if( mgrInited ) {
-	RMV_TIMER;
-	mgrClock += (MAX_TIME + mgrTimer.tmCount)*1.0e-6;
- } else {
-	if( _atexit( &Remove_timer ) == 0 ) mgrInited = true;
-	mgrClock = 0.0;
-}
-	if( mgrInited ) {
-		mgrTimer.tmAddr = NULL;
-		mgrTimer.tmCount = 0;
-		mgrTimer.tmWakeUp = 0;
-		mgrTimer.tmReserved = 0;
-		InsTime( (QElemPtr)&mgrTimer );
-		PrimeTime( (QElemPtr)&mgrTimer, -MAX_TIME );
-	}
-	return( mgrClock );
+    if( mgrInited )
+    {
+        RMV_TIMER;
+        mgrClock += (MAX_TIME + mgrTimer.tmCount)*1.0e-6;
+    }
+    else {
+        if( _atexit( &Remove_timer ) == 0 )
+            mgrInited = true;
+        mgrClock = 0.0;
+    }
+    if( mgrInited )
+    {
+        mgrTimer.tmAddr = NULL;
+        mgrTimer.tmCount = 0;
+        mgrTimer.tmWakeUp = 0;
+        mgrTimer.tmReserved = 0;
+        InsTime( (QElemPtr)&mgrTimer );
+        PrimeTime( (QElemPtr)&mgrTimer, -MAX_TIME );
+    }
+    return( mgrClock );
 }
 #endif
 
@@ -1200,11 +1210,11 @@ SPDP dtime( )
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- q = (SPDP) (TimeNowHigh()) / (SPDP) CLK_TCK_HIGH;
+    q = (SPDP) (TimeNowHigh()) / (SPDP) CLK_TCK_HIGH;
 
- return q;
+    return q;
 }
 #endif
 
@@ -1225,14 +1235,14 @@ struct rusage rusage;
 
 SPDP dtime()
 {
- SPDP q;
+    SPDP q;
 
- getrusage(RUSAGE_SELF,&rusage);
+    getrusage(RUSAGE_SELF, &rusage);
 
- q = (SPDP)(rusage.ru_utime.tv_sec);
- q = q + (SPDP)(rusage.ru_utime.tv_nsec) * 1.0e-09;
-	
- return q;
+    q = (SPDP)(rusage.ru_utime.tv_sec);
+    q = q + (SPDP)(rusage.ru_utime.tv_nsec) * 1.0e-09;
+
+    return q;
 }
 #endif
 
@@ -1246,11 +1256,11 @@ SPDP dtime()
 
 SPDP dtime(void)
 {
- SPDP q;
+    SPDP q;
 
- q = (SPDP)GetTickCount() * 1.0e-03;
-	
- return q;
+    q = (SPDP)GetTickCount() * 1.0e-03;
+
+    return q;
 }
 #endif
 
@@ -1268,9 +1278,9 @@ struct tms tms;
 
 SPDP dtime()
 {
- SPDP q;
- times(&tms);
- q = (SPDP)tms.tms_utime / (SPDP)CLK_TCK;
- return q;
+    SPDP q;
+    times(&tms);
+    q = (SPDP)tms.tms_utime / (SPDP)CLK_TCK;
+    return q;
 }
 #endif
