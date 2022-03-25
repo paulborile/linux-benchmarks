@@ -43,24 +43,24 @@ Wetstones
 Fstones
 
 	$ gcc -o fstones -O fstones.c
-	$ ./fstones BULK 10000
-	Phase 1 ** Sequential file creation
-		   Creating a 10000 blocks file (131072 byte blocks)
-		   Elapsed time 22 - 56M/sec
-		   Average write service time 2.200000000 ms.
-	Phase 2 ** Sequential file reading
-		   Elapsed time 20 - 62M/sec
-		   Average read service time 2.000000000 ms.
-	Phase 3 ** Random file read
-		   Elapsed time 1 - 1250M/sec
-		   Average seek-read time 10.000000000 ms.
-	Phase 4 ** Random file write
-		   Elapsed time 1 - 1250M/sec
-		   Average seek-write time 10.000000000 ms.
-	Phase 5 ** Directory test
-		   Elapsed time 3 - index 33333/sec
-	...
-	...
+	$ ./fstones --read --write --rread --rwrite --size 10 --blocksize 128 --file BULK --dir 200000
+	** fstones 3.0 - (C) 1989-2022 Paul Stephen Borile
+	Blocksize for read/write operations is 128K
+	Phase 1 ** Sequential file creation 
+		   Creating a 10 GB file
+		   Elapsed time 21 - 487M/sec
+		   Average write service time 0.256344527 ms.
+	Phase 2 ** Sequential file reading 
+		   Elapsed time 29 - 353M/sec
+		   Average read service time 0.353999585 ms.
+	Phase 3 ** Random file read 
+		   Elapsed time 104 - 98M/sec
+		   Average seek-read time 0.009918213 ms.
+	Phase 4 ** Random file write 
+		   Elapsed time 329 - 31M/sec
+		   Average seek-write time 0.031375885 ms.
+	Phase 5 ** Directory test 
+		   Elapsed time 2 - index 100000/sec
 
 Ack - Ackerman function (http://en.wikipedia.org/wiki/Ackermann_function)
 
