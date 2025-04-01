@@ -84,7 +84,6 @@ char **argv;
             break;
 
         case 'b':
-            dir_opt = 1;
             blocksize_in_K = atoi(optarg);
             break;
 
@@ -165,7 +164,7 @@ HELP:
         }
         else
         {
-            printf("	   Elapsed time %ld - %LdM/sec\n", (stop-start),
+            printf("	   Elapsed time %ld - %LdMB/sec\n", (stop-start),
                    ((bytes/(stop-start))/1024/1024));
             servtime = (double)((double)(stop-start)/(double)ops_done);
             printf("	   Average write service time %.9f ms.\n", servtime*1000);
@@ -208,7 +207,7 @@ HELP:
         }
         else
         {
-            printf("	   Elapsed time %ld - %LdM/sec\n", (stop-start),
+            printf("	   Elapsed time %ld - %LdMB/sec\n", (stop-start),
                    ((bytes/(stop-start))/1024/1024));
             servtime = (double)((double)(stop-start)/(double)ops_done);
             printf("	   Average read service time %.9f ms.\n",
